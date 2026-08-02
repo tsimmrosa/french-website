@@ -833,8 +833,9 @@ a { color: inherit; }
 
 /* Per-section slideshow (built from chapter galleries by JS) */
 .slideshow {
+  display: block; /* override .chapter-gallery grid so auto-margins don't shrink it */
   position: relative; overflow: hidden; background: var(--stone);
-  aspect-ratio: 3 / 2; max-width: 56rem; margin: 2rem auto 0;
+  aspect-ratio: 3 / 2; width: min(56rem, 100%); margin: 2rem auto 0;
 }
 .slideshow .slide {
   position: absolute; inset: 0; margin: 0; opacity: 0;

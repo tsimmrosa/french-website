@@ -9,7 +9,7 @@
      CONFIG — fill these in before launch
      ============================================================ */
   var META_PIXEL_ID = "";            // e.g. "1234567890123456"
-  var FORM_ENDPOINT = "";            // e.g. "https://formspree.io/f/xxxxxx" or your own handler
+  var FORM_ENDPOINT = "/api/lead";   // Vercel serverless handler → Resend (key stays server-side)
   var OWNER_EMAIL   = "tsimmondsrosa@gmail.com";  // used as the fallback if no endpoint is set
 
   /* Until FORM_ENDPOINT is set, the form falls back to opening the visitor's
@@ -286,8 +286,8 @@
     if (FORM_ENDPOINT) {
       fetch(FORM_ENDPOINT, {
         method: "POST",
-        body: data,
-        headers: { Accept: "application/json" }
+        body: JSON.stringify(Object.fromEntries(data)),
+        headers: { "Content-Type": "application/json", Accept: "application/json" }
       }).then(function (res) {
         if (res.ok) { done(); }
         else { throw new Error("Bad response"); }
