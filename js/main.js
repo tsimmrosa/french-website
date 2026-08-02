@@ -114,9 +114,10 @@
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function buildSlideshow(container) {
     var slides = Array.prototype.slice.call(container.children);
-    if (slides.length < 2) return; // one image — leave as a still
+    if (slides.length < 1) return;
     container.classList.add("slideshow");
     slides.forEach(function (s, i) { s.classList.add("slide"); if (i === 0) s.classList.add("active"); });
+    if (slides.length < 2) return; // single image — full-bleed still, no controls
 
     var idx = 0, timer = null;
     var prev = document.createElement("button");
