@@ -92,7 +92,7 @@
 
   /* ---------- Staggered image reveal ---------- */
   var media = Array.prototype.slice.call(document.querySelectorAll(
-    ".g-item, .area-item, .chapter-gallery a, .chapter-media, .band-media"));
+    ".g-item, .area-item, .chapter-media, .band-media"));
   media.forEach(function (el) { el.classList.add("io-img"); });
   document.querySelectorAll(".gallery-grid, .area-grid, .chapter-gallery").forEach(function (grid) {
     Array.prototype.slice.call(grid.querySelectorAll(".io-img")).forEach(function (k, i) {
@@ -109,6 +109,45 @@
   } else {
     media.forEach(function (el) { el.classList.add("in"); });
   }
+
+  /* ---------- Per-section slideshows (chapter galleries) ---------- */
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function buildSlideshow(container) {
+    var slides = Array.prototype.slice.call(container.children);
+    if (slides.length < 2) return; // one image — leave as a still
+    container.classList.add("slideshow");
+    slides.forEach(function (s, i) { s.classList.add("slide"); if (i === 0) s.classList.add("active"); });
+
+    var idx = 0, timer = null;
+    var prev = document.createElement("button");
+    prev.className = "ss-btn ss-prev"; prev.setAttribute("aria-label", "Previous photo"); prev.innerHTML = "‹";
+    var next = document.createElement("button");
+    next.className = "ss-btn ss-next"; next.setAttribute("aria-label", "Next photo"); next.innerHTML = "›";
+    var dots = document.createElement("div"); dots.className = "ss-dots";
+    slides.forEach(function (_, i) {
+      var d = document.createElement("button");
+      d.className = "ss-dot" + (i === 0 ? " active" : "");
+      d.setAttribute("aria-label", "Photo " + (i + 1));
+      d.addEventListener("click", function () { go(i); restart(); });
+      dots.appendChild(d);
+    });
+    container.appendChild(prev); container.appendChild(next); container.appendChild(dots);
+
+    function go(n) {
+      slides[idx].classList.remove("active"); dots.children[idx].classList.remove("active");
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add("active"); dots.children[idx].classList.add("active");
+    }
+    function play() { if (!reducedMotion) timer = setInterval(function () { go(idx + 1); }, 5000); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function restart() { stop(); play(); }
+    prev.addEventListener("click", function () { go(idx - 1); restart(); });
+    next.addEventListener("click", function () { go(idx + 1); restart(); });
+    container.addEventListener("mouseenter", stop);
+    container.addEventListener("mouseleave", play);
+    play();
+  }
+  document.querySelectorAll(".chapter-gallery").forEach(buildSlideshow);
 
   /* ---------- Lightbox ---------- */
   var lightbox = document.getElementById("lightbox");
