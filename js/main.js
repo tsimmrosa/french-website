@@ -40,6 +40,26 @@
     revealEls.forEach(function (el) { el.classList.add("visible"); });
   }
 
+  /* ---------- Staggered image reveal ---------- */
+  var media = Array.prototype.slice.call(document.querySelectorAll(
+    ".g-item, .area-item, .chapter-gallery a, .chapter-media, .band-media"));
+  media.forEach(function (el) { el.classList.add("io-img"); });
+  document.querySelectorAll(".gallery-grid, .area-grid, .chapter-gallery").forEach(function (grid) {
+    Array.prototype.slice.call(grid.querySelectorAll(".io-img")).forEach(function (k, i) {
+      k.style.transitionDelay = Math.min(i * 70, 420) + "ms";
+    });
+  });
+  if ("IntersectionObserver" in window) {
+    var imgIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); imgIO.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    media.forEach(function (el) { imgIO.observe(el); });
+  } else {
+    media.forEach(function (el) { el.classList.add("in"); });
+  }
+
   /* ---------- Lightbox ---------- */
   var lightbox = document.getElementById("lightbox");
   var lbImg = lightbox.querySelector("img");
@@ -51,12 +71,13 @@
     lbImg.src = items[current].getAttribute("href");
     lbImg.alt = items[current].querySelector("img").alt;
     lightbox.hidden = false;
+    requestAnimationFrame(function () { lightbox.classList.add("open"); });
     document.body.style.overflow = "hidden";
   }
   function closeLightbox() {
-    lightbox.hidden = true;
-    lbImg.src = "";
+    lightbox.classList.remove("open");
     document.body.style.overflow = "";
+    setTimeout(function () { lightbox.hidden = true; lbImg.src = ""; }, 350);
   }
   items.forEach(function (a, i) {
     a.addEventListener("click", function (e) {

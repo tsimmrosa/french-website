@@ -705,3 +705,48 @@ a { color: inherit; }
   html { scroll-behavior: auto; }
   .hero-scroll span, .g-item img { animation: none; transition: none; }
 }
+
+/* ============================================================
+   Motion layer — photo reveals, scroll, hero life, lightbox
+   All additive; degrades to visible if JS is off.
+   ============================================================ */
+
+/* Staggered image reveal on scroll (class + delay applied by JS) */
+.io-img {
+  opacity: 0;
+  transform: translateY(20px) scale(.985);
+  transition: opacity .9s ease, transform .9s cubic-bezier(.2,.6,.2,1);
+  will-change: opacity, transform;
+}
+.io-img.in { opacity: 1; transform: none; }
+
+/* Hero: slow Ken Burns settle + content rising in on load */
+.hero-media img { animation: kenburns 18s ease-out both; }
+@keyframes kenburns { from { transform: scale(1.08); } to { transform: scale(1); } }
+
+.hero-content > * { opacity: 0; animation: heroUp .9s ease forwards; }
+.hero-content > *:nth-child(1) { animation-delay: .15s; }
+.hero-content > *:nth-child(2) { animation-delay: .30s; }
+.hero-content > *:nth-child(3) { animation-delay: .45s; }
+.hero-content > *:nth-child(4) { animation-delay: .60s; }
+.hero-content > *:nth-child(5) { animation-delay: .75s; }
+@keyframes heroUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* Buttons: subtle lift */
+.btn { transition: background .3s ease, color .3s ease, border-color .3s ease, transform .25s ease, box-shadow .3s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn-solid:hover, .btn-outline:hover, .btn-ghost-dark:hover { box-shadow: 0 8px 22px rgba(45,43,40,.18); }
+
+/* Lightbox: fade + zoom instead of instant show */
+.lightbox { opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s ease; }
+.lightbox.open { opacity: 1; visibility: visible; }
+.lightbox img { transform: scale(.96); transition: transform .4s cubic-bezier(.2,.6,.2,1); }
+.lightbox.open img { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .io-img { opacity: 1; transform: none; transition: none; }
+  .hero-media img { animation: none; }
+  .hero-content > * { opacity: 1; animation: none; }
+  .btn:hover { transform: none; }
+  .lightbox, .lightbox img { transition: none; }
+}
