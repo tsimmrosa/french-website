@@ -330,7 +330,11 @@ a { color: inherit; }
 .chapter:last-child { margin-bottom: 0; }
 @media (min-width: 860px) {
   .chapter { grid-template-columns: 7fr 5fr; gap: clamp(2rem, 5vw, 4.5rem); }
-  .chapter-flip .chapter-media { order: 2; }
+  /* Flip = mirror the top row (text left, wide image right). Place explicitly:
+     using `order` here pushed the image past the full-width carousel to the bottom. */
+  .chapter-flip { grid-template-columns: 5fr 7fr; }
+  .chapter-flip .chapter-text { grid-column: 1; grid-row: 1; }
+  .chapter-flip .chapter-media { grid-column: 2; grid-row: 1; }
 }
 .chapter-media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .chapter-num {
