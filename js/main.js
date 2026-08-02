@@ -116,8 +116,21 @@
     var slides = Array.prototype.slice.call(container.children);
     if (slides.length < 1) return;
     container.classList.add("slideshow");
-    slides.forEach(function (s, i) { s.classList.add("slide"); if (i === 0) s.classList.add("active"); });
-    if (slides.length < 2) return; // single image — full-bleed still, no controls
+    slides.forEach(function (s, i) {
+      s.classList.add("slide");
+      if (i === 0) s.classList.add("active");
+      // Upgrade to the full-res source (same file the lightbox opens) so the
+      // larger carousel box isn't showing an upscaled 800px thumbnail.
+      var big = s.getAttribute("href");
+      var img = s.querySelector("img");
+      var src = s.querySelector("picture source");
+      if (big && img) {
+        if (src) src.parentNode.removeChild(src); // drop 800px webp so the big jpg wins
+        img.removeAttribute("srcset");
+        img.src = big;
+      }
+    });
+    if (slides.length < 2) return; // single image — no controls
 
     var idx = 0, timer = null;
     var prev = document.createElement("button");
