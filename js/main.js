@@ -350,7 +350,7 @@
     el.addEventListener("click", function (e) {
       e.preventDefault();
       var url = encodeURIComponent(window.location.href.split("?")[0]);
-      var text = encodeURIComponent(isFrench ? "Une propriété de village composée de quatre bâtiments, avec deux gîtes, un beau jardin et une piscine — 490 000 €, vente entre particuliers." : "A French village property of four buildings with two income-producing gîtes, gardens and a pool — €490,000, private sale.");
+      var text = encodeURIComponent(isFrench ? "Une propriété de village composée de quatre bâtiments, avec deux gîtes, un beau jardin et une piscine — 475 000 €, vente entre particuliers." : "A French village property of four buildings with two income-producing gîtes, gardens and a pool — €475,000, private sale.");
       var map = {
         facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
         x: "https://twitter.com/intent/tweet?url=" + url + "&text=" + text,
