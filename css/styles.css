@@ -849,6 +849,9 @@ a { color: inherit; }
 }
 @media (min-width: 600px) { .carousel .slide { flex-basis: calc((100% - .7rem) / 2); } }
 @media (min-width: 900px) { .carousel .slide { flex-basis: calc((100% - 1.4rem) / 3); } }
+/* one-photo chapter: full width, no empty track gaps */
+.carousel.single { width: min(56rem, 100%); }
+.carousel.single .slide { flex-basis: 100%; }
 .carousel .slide picture,
 .carousel .slide img { display: block; width: 100%; height: 100%; }
 .carousel .slide img { object-fit: cover; aspect-ratio: auto; }

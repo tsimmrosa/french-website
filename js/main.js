@@ -132,7 +132,7 @@
       track.appendChild(s);
     });
     container.appendChild(track);
-    if (slides.length < 2) return; // single image — no controls
+    if (slides.length < 2) { container.classList.add("single"); return; } // one photo — full width, no controls
 
     var prev = document.createElement("button");
     prev.className = "ss-btn ss-prev"; prev.setAttribute("aria-label", "Previous photos"); prev.innerHTML = "‹";
