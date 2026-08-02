@@ -831,33 +831,35 @@ a { color: inherit; }
   .nav-cta { display: none; }
 }
 
-/* Per-section slideshow (built from chapter galleries by JS) */
-.slideshow {
-  display: block; /* override .chapter-gallery grid so auto-margins don't shrink it */
-  position: relative; overflow: hidden; background: var(--stone);
-  aspect-ratio: 3 / 2; width: min(56rem, 100%); margin: 2rem auto 0;
+/* Per-section carousel — 3-up sliding track (built from chapter galleries by JS) */
+.carousel {
+  display: block; /* override .chapter-gallery grid */
+  position: relative; width: min(74rem, 100%); margin: 2rem auto 0;
 }
-.slideshow .slide {
-  position: absolute; inset: 0; margin: 0; opacity: 0;
-  transition: opacity .8s ease; z-index: 0;
+.ss-track {
+  display: flex; gap: .7rem; overflow-x: auto;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.slideshow .slide.active { opacity: 1; z-index: 1; }
-.slideshow .slide,
-.slideshow .slide picture,
-.slideshow .slide img { display: block; width: 100%; height: 100%; }
-.slideshow .slide img { object-fit: cover; aspect-ratio: auto; }
+.ss-track::-webkit-scrollbar { display: none; }
+.carousel .slide {
+  position: relative; flex: 0 0 100%; margin: 0;
+  scroll-snap-align: start; aspect-ratio: 3 / 2;
+  overflow: hidden; background: var(--stone);
+}
+@media (min-width: 600px) { .carousel .slide { flex-basis: calc((100% - .7rem) / 2); } }
+@media (min-width: 900px) { .carousel .slide { flex-basis: calc((100% - 1.4rem) / 3); } }
+.carousel .slide picture,
+.carousel .slide img { display: block; width: 100%; height: 100%; }
+.carousel .slide img { object-fit: cover; aspect-ratio: auto; }
 .ss-btn {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
-  width: 2.7rem; height: 2.7rem; border: 0; cursor: pointer;
-  background: rgba(24,22,20,.4); color: #fff; font-size: 1.5rem; line-height: 1;
+  width: 2.6rem; height: 2.6rem; border: 0; cursor: pointer;
+  background: rgba(24,22,20,.5); color: #fff; font-size: 1.4rem; line-height: 1;
   transition: background .3s ease;
 }
-.ss-btn:hover { background: rgba(24,22,20,.72); }
-.ss-prev { left: .6rem; } .ss-next { right: .6rem; }
-.ss-dots { position: absolute; bottom: .8rem; left: 0; right: 0; z-index: 3; display: flex; justify-content: center; gap: .5rem; }
-.ss-dot { width: .5rem; height: .5rem; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.55); cursor: pointer; transition: background .3s ease; }
-.ss-dot.active { background: var(--brass); }
-@media (prefers-reduced-motion: reduce) { .slideshow .slide { transition: none; } }
+.ss-btn:hover { background: rgba(24,22,20,.78); }
+.ss-prev { left: -.3rem; } .ss-next { right: -.3rem; }
 
 /* Lightbox caption */
 .lb-caption {

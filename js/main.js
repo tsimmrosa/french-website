@@ -115,48 +115,49 @@
   function buildSlideshow(container) {
     var slides = Array.prototype.slice.call(container.children);
     if (slides.length < 1) return;
-    container.classList.add("slideshow");
-    slides.forEach(function (s, i) {
+    container.classList.add("carousel");
+    var track = document.createElement("div");
+    track.className = "ss-track";
+    slides.forEach(function (s) {
       s.classList.add("slide");
-      if (i === 0) s.classList.add("active");
-      // Upgrade to the full-res source (same file the lightbox opens) so the
-      // larger carousel box isn't showing an upscaled 800px thumbnail.
+      // Upgrade to the full-res source (same file the lightbox opens).
       var big = s.getAttribute("href");
       var img = s.querySelector("img");
       var src = s.querySelector("picture source");
       if (big && img) {
-        if (src) src.parentNode.removeChild(src); // drop 800px webp so the big jpg wins
+        if (src) src.parentNode.removeChild(src);
         img.removeAttribute("srcset");
         img.src = big;
       }
+      track.appendChild(s);
     });
+    container.appendChild(track);
     if (slides.length < 2) return; // single image — no controls
 
-    var idx = 0, timer = null;
     var prev = document.createElement("button");
-    prev.className = "ss-btn ss-prev"; prev.setAttribute("aria-label", "Previous photo"); prev.innerHTML = "‹";
+    prev.className = "ss-btn ss-prev"; prev.setAttribute("aria-label", "Previous photos"); prev.innerHTML = "‹";
     var next = document.createElement("button");
-    next.className = "ss-btn ss-next"; next.setAttribute("aria-label", "Next photo"); next.innerHTML = "›";
-    var dots = document.createElement("div"); dots.className = "ss-dots";
-    slides.forEach(function (_, i) {
-      var d = document.createElement("button");
-      d.className = "ss-dot" + (i === 0 ? " active" : "");
-      d.setAttribute("aria-label", "Photo " + (i + 1));
-      d.addEventListener("click", function () { go(i); restart(); });
-      dots.appendChild(d);
-    });
-    container.appendChild(prev); container.appendChild(next); container.appendChild(dots);
+    next.className = "ss-btn ss-next"; next.setAttribute("aria-label", "Next photos"); next.innerHTML = "›";
+    container.appendChild(prev); container.appendChild(next);
 
-    function go(n) {
-      slides[idx].classList.remove("active"); dots.children[idx].classList.remove("active");
-      idx = (n + slides.length) % slides.length;
-      slides[idx].classList.add("active"); dots.children[idx].classList.add("active");
+    function stepSize() {
+      var first = track.querySelector(".slide");
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 11;
+      return first.getBoundingClientRect().width + gap;
     }
-    function play() { if (!reducedMotion) timer = setInterval(function () { go(idx + 1); }, 5000); }
+    function move(dir) {
+      var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+      var atStart = track.scrollLeft <= 2;
+      if (dir > 0 && atEnd) track.scrollTo({ left: 0, behavior: "smooth" });
+      else if (dir < 0 && atStart) track.scrollTo({ left: track.scrollWidth, behavior: "smooth" });
+      else track.scrollBy({ left: dir * stepSize(), behavior: "smooth" });
+    }
+    var timer = null;
+    function play() { if (!reducedMotion) timer = setInterval(function () { move(1); }, 3500); }
     function stop() { if (timer) { clearInterval(timer); timer = null; } }
     function restart() { stop(); play(); }
-    prev.addEventListener("click", function () { go(idx - 1); restart(); });
-    next.addEventListener("click", function () { go(idx + 1); restart(); });
+    prev.addEventListener("click", function () { move(-1); restart(); });
+    next.addEventListener("click", function () { move(1); restart(); });
     container.addEventListener("mouseenter", stop);
     container.addEventListener("mouseleave", play);
     play();
