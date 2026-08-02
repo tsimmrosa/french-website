@@ -16,13 +16,63 @@
      email client with everything filled in — so enquiries still reach you.
      Also replace OWNER_EMAIL above and the mailto: links in index.html. */
 
-  /* ---------- Sticky nav ---------- */
+  /* ---------- Sticky nav + mini price bar ---------- */
   var nav = document.querySelector(".nav");
+  var pricebar = document.getElementById("pricebar");
+  var hero = document.querySelector(".hero");
+  var enquire = document.getElementById("enquire");
   var onScroll = function () {
     nav.classList.toggle("scrolled", window.scrollY > 40);
+    if (pricebar) {
+      var past = window.scrollY > (hero ? hero.offsetHeight * 0.85 : 600);
+      var nearForm = enquire && enquire.getBoundingClientRect().top < window.innerHeight * 0.9;
+      pricebar.classList.toggle("show", past && !nearForm);
+    }
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+
+  /* ---------- Mobile menu ---------- */
+  var navToggle = document.getElementById("navToggle");
+  var navLinks = document.getElementById("navLinks");
+  if (navToggle && navLinks) {
+    navToggle.addEventListener("click", function () {
+      var open = navLinks.classList.toggle("open");
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    navLinks.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        navLinks.classList.remove("open");
+        navToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
+  /* ---------- Income count-up ---------- */
+  var totalEl = document.querySelector(".income-total dd");
+  if (totalEl && "IntersectionObserver" in window &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var target = parseInt(totalEl.textContent.replace(/[^\d]/g, ""), 10);
+    if (target) {
+      var counted = false;
+      var countIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && !counted) {
+            counted = true; countIO.disconnect();
+            var start = null, dur = 1400;
+            var tick = function (t) {
+              if (!start) start = t;
+              var p = Math.min((t - start) / dur, 1);
+              totalEl.textContent = "€" + Math.floor(p * target).toLocaleString("en-GB");
+              if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          }
+        });
+      }, { threshold: 0.5 });
+      countIO.observe(totalEl);
+    }
+  }
 
   /* ---------- Scroll reveal ---------- */
   var revealEls = document.querySelectorAll(".reveal");
@@ -63,6 +113,7 @@
   /* ---------- Lightbox ---------- */
   var lightbox = document.getElementById("lightbox");
   var lbImg = lightbox.querySelector("img");
+  var lbCaption = lightbox.querySelector(".lb-caption");
   var items = Array.prototype.slice.call(document.querySelectorAll("[data-lightbox]"));
   var current = 0;
 
@@ -70,6 +121,7 @@
     current = (i + items.length) % items.length;
     lbImg.src = items[current].getAttribute("href");
     lbImg.alt = items[current].querySelector("img").alt;
+    if (lbCaption) lbCaption.textContent = lbImg.alt;
     lightbox.hidden = false;
     requestAnimationFrame(function () { lightbox.classList.add("open"); });
     document.body.style.overflow = "hidden";
@@ -89,6 +141,12 @@
   lightbox.querySelector(".lb-prev").addEventListener("click", function () { openLightbox(current - 1); });
   lightbox.querySelector(".lb-next").addEventListener("click", function () { openLightbox(current + 1); });
   lightbox.addEventListener("click", function (e) { if (e.target === lightbox) closeLightbox(); });
+  var touchX = 0;
+  lightbox.addEventListener("touchstart", function (e) { touchX = e.changedTouches[0].clientX; }, { passive: true });
+  lightbox.addEventListener("touchend", function (e) {
+    var dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) openLightbox(current + (dx < 0 ? 1 : -1));
+  }, { passive: true });
   document.addEventListener("keydown", function (e) {
     if (lightbox.hidden) return;
     if (e.key === "Escape") closeLightbox();

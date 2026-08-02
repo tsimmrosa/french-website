@@ -264,9 +264,10 @@ a { color: inherit; }
   margin-top: 2.2rem;
 }
 @media (min-width: 760px) {
-  .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: .9rem; }
-  .g-wide { grid-column: span 2; }
-  .g-tall { grid-row: span 2; }
+  .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: .9rem; grid-auto-flow: dense; }
+  .g-item { aspect-ratio: 1; }
+  .g-wide { grid-column: span 2; aspect-ratio: auto; }
+  .g-tall { grid-row: span 2; aspect-ratio: auto; }
 }
 .g-item { position: relative; display: block; overflow: hidden; background: var(--stone); }
 .g-item > a { display: block; width: 100%; height: 100%; }
@@ -349,7 +350,7 @@ a { color: inherit; }
   margin-top: 1.4rem;
 }
 @media (min-width: 860px) {
-  .chapter-gallery { grid-template-columns: repeat(5, 1fr); gap: .7rem; }
+  .chapter-gallery { grid-template-columns: repeat(4, 1fr); gap: .7rem; }
 }
 .chapter-gallery a { display: block; overflow: hidden; background: var(--stone); }
 .chapter-gallery picture { display: block; width: 100%; height: 100%; }
@@ -749,4 +750,86 @@ a { color: inherit; }
   .hero-content > * { opacity: 1; animation: none; }
   .btn:hover { transform: none; }
   .lightbox, .lightbox img { transition: none; }
+}
+
+/* ============================================================
+   Editorial polish — photo grade, dividers, sticky bar,
+   mobile nav, lightbox caption
+   ============================================================ */
+
+/* Consistent warm grade + vignette + film grain so uneven photo
+   quality reads as one cohesive collection (hero left crisp). */
+.g-item img, .area-item img, .chapter-gallery img,
+.band-media img, .chapter-media img {
+  filter: saturate(1.06) contrast(1.03) brightness(1.02) sepia(.05);
+}
+.g-item, .area-item, .chapter-gallery a { position: relative; }
+.g-item::after, .area-item::after, .chapter-gallery a::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  box-shadow: inset 0 0 55px rgba(24,22,20,.22);
+}
+.g-item::before, .area-item::before, .chapter-gallery a::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  opacity: .07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.g-item figcaption, .area-item figcaption { z-index: 2; }
+
+/* Ornamental brass divider for flat cream-on-cream joins */
+.rule-brass { border: 0; width: 3.5rem; height: 1px; background: var(--brass); margin: clamp(2.5rem, 7vw, 5rem) auto; }
+
+/* Sticky mini price / CTA bar (shown after hero, hidden near form) */
+.pricebar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .7rem clamp(1rem, 4vw, 2rem);
+  background: rgba(45,43,40,.96); backdrop-filter: blur(8px); color: var(--white);
+  transform: translateY(110%); transition: transform .4s cubic-bezier(.2,.6,.2,1);
+}
+.pricebar.show { transform: none; }
+.pricebar-price { font-family: var(--serif); font-size: 1.15rem; letter-spacing: .04em; }
+.pricebar-price span {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .2em;
+  text-transform: uppercase; color: rgba(255,255,255,.7); margin-left: .7rem;
+}
+.pricebar .btn { padding: .6rem 1.6rem; font-size: .74rem; }
+.pricebar .btn-solid { background: var(--brass); border-color: var(--brass); }
+.pricebar .btn-solid:hover { background: var(--white); color: var(--charcoal); border-color: var(--white); }
+@media (max-width: 520px) { .pricebar-price span { display: none; } }
+
+/* Mobile hamburger + dropdown menu */
+.nav-toggle {
+  display: inline-flex; flex-direction: column; justify-content: center; gap: 5px;
+  width: 2.2rem; height: 2.2rem; margin-left: .6rem;
+  background: none; border: 0; cursor: pointer; padding: 0;
+}
+.nav-toggle span { display: block; height: 1.5px; width: 1.4rem; background: var(--white); transition: transform .3s ease, opacity .3s ease; }
+.nav.scrolled .nav-toggle span { background: var(--charcoal); }
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+@media (min-width: 860px) { .nav-toggle { display: none; } }
+@media (max-width: 859px) {
+  .nav-inner { position: relative; }
+  .nav-links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; gap: 0; margin: 0;
+    background: rgba(247,244,238,.98); backdrop-filter: blur(8px);
+    padding: .3rem 1.4rem .8rem; box-shadow: 0 14px 34px rgba(24,22,20,.14);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { color: var(--charcoal); padding: .8rem 0; border-bottom: 1px solid rgba(45,43,40,.08); }
+  .nav-cta { display: none; }
+}
+
+/* Lightbox caption */
+.lb-caption {
+  position: absolute; bottom: 1.1rem; left: 0; right: 0; text-align: center;
+  color: rgba(255,255,255,.85); font-family: var(--serif); font-style: italic;
+  font-size: 1.05rem; padding: 0 3rem; pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pricebar { transition: none; }
+  .nav-toggle span { transition: none; }
 }

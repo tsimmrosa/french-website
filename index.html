@@ -38,7 +38,7 @@
   <!-- LCP: preload the hero image -->
   <link rel="preload" as="image" href="images/hero-house-lavender-800.jpg" imagesrcset="images/hero-house-lavender-800.jpg 800w" imagesizes="100vw" fetchpriority="high">
 
-  <link rel="stylesheet" href="css/styles.css?v=202608021600">
+  <link rel="stylesheet" href="css/styles.css?v=202608021700">
   <link rel="icon" href="images/favicon.png" type="image/png">
 
   <!-- Structured data -->
@@ -101,15 +101,24 @@
   <header class="nav" id="top">
     <div class="nav-inner">
       <a class="nav-brand" href="#top">La Cour <span>des Lavandes</span></a>
-      <nav class="nav-links" aria-label="Sections">
+      <nav class="nav-links" id="navLinks" aria-label="Sections">
         <a href="#story">The Story</a>
         <a href="#gallery">Gallery</a>
         <a href="#location">Location</a>
         <a href="#income">Income</a>
       </nav>
       <a class="btn btn-outline nav-cta" href="#enquire">Enquire</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
+
+  <!-- Sticky mini price / CTA bar -->
+  <div class="pricebar" id="pricebar" aria-hidden="true">
+    <p class="pricebar-price">€475,000 <span>La Cour des Lavandes</span></p>
+    <a class="btn btn-solid" href="#enquire">Enquire</a>
+  </div>
 
   <main>
 
@@ -159,7 +168,7 @@
     <p class="eyebrow gold-rule">Gallery</p>
     <h2>A Walk Through Your New Home</h2>
     <div class="gallery-grid">
-      <figure class="g-item">
+      <figure class="g-item g-wide">
         <a href="images/hero-house-lavender-800.jpg" data-lightbox><picture data-auto><source type="image/webp" srcset="images/hero-house-lavender-800.webp"><img src="images/hero-house-lavender-800.jpg" loading="lazy" width="800" height="600" alt="The main house of the French village property for sale, behind a bank of flowering lavender"></picture></a>
         <figcaption>The House<em>From the gate</em></figcaption>
       </figure>
@@ -183,7 +192,7 @@
         <a href="images/outbuilding-exterior-1600.jpg" data-lightbox><picture data-auto><source type="image/webp" srcset="images/outbuilding-exterior-800.webp"><img src="images/outbuilding-exterior-800.jpg" loading="lazy" width="800" height="600" alt="The large outbuilding on the property, structurally sound with conversion potential"></picture></a>
         <figcaption>The Outbuilding<em>Room to grow</em></figcaption>
       </figure>
-      <figure class="g-item">
+      <figure class="g-item g-tall">
         <a href="images/pool-wide-800.jpg" data-lightbox><picture data-auto><source type="image/webp" srcset="images/pool-wide-800.webp"><img src="images/pool-wide-800.jpg" loading="lazy" width="800" height="600" alt="The swimming pool with its pergola and palm at the French property for sale"></picture></a>
         <figcaption>The Pool<em>Pergola &amp; palms</em></figcaption>
       </figure>
@@ -194,6 +203,8 @@
         </div>
     <p class="gallery-note">Every room photographed as it lives today — no staging, no filters.</p>
   </section>
+
+  <hr class="rule-brass" aria-hidden="true">
 
   <!-- ============ 4. THE PROPERTY — CHAPTERS ============ -->
   <section class="section section-wide" id="property">
@@ -521,6 +532,7 @@
     <button class="lb-prev" aria-label="Previous image">&#8249;</button>
     <img src="" alt="">
     <button class="lb-next" aria-label="Next image">&#8250;</button>
+    <p class="lb-caption"></p>
   </div>
 
   <!-- Cookie notice (GDPR — gates the Meta Pixel) -->
@@ -532,6 +544,6 @@
     </div>
   </div>
 
-  <script src="js/main.js" defer></script>
+  <script src="js/main.js?v=202608021700" defer></script>
 </body>
 </html>
