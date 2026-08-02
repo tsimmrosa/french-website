@@ -1,0 +1,12 @@
+# Working files — must never be published.
+# Without this, every full-resolution original would be publicly reachable at
+# /images/_originals/... and the deployment would be ~60 MB larger.
+images/_originals/
+
+# Local tooling and notes
+prep-photos.sh
+photo-map.txt
+README.md
+images/README.md
+
+.DS_Store
