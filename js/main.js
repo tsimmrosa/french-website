@@ -10,11 +10,6 @@
      ============================================================ */
   var META_PIXEL_ID = "";            // e.g. "1234567890123456"
   var FORM_ENDPOINT = "/api/lead";   // Vercel serverless handler → Resend (key stays server-side)
-  var OWNER_EMAIL   = "tsimmondsrosa@gmail.com";  // used as the fallback if no endpoint is set
-
-  /* Until FORM_ENDPOINT is set, the form falls back to opening the visitor's
-     email client with everything filled in — so enquiries still reach you.
-     Also replace OWNER_EMAIL above and the mailto: links in index.html. */
 
   /* ---------- Sticky nav + mini price bar ---------- */
   var nav = document.querySelector(".nav");
@@ -208,6 +203,56 @@
     if (e.key === "ArrowRight") openLightbox(current + 1);
   });
 
+  /* ---------- Chapter slideshows ---------- */
+  document.querySelectorAll("[data-slideshow]").forEach(function (slideshow) {
+    var thumbs = Array.prototype.slice.call(slideshow.querySelectorAll("[data-slide-src]"));
+    var currentLink = slideshow.querySelector(".slideshow-current");
+    var currentImage = currentLink.querySelector("img");
+    var caption = slideshow.querySelector(".slideshow-caption");
+    var number = slideshow.querySelector("[data-slide-number]");
+    var activeSlide = 0;
+
+    function showSlide(index) {
+      activeSlide = (index + thumbs.length) % thumbs.length;
+      var thumb = thumbs[activeSlide];
+      currentImage.src = thumb.getAttribute("data-slide-src");
+      currentImage.alt = thumb.getAttribute("data-slide-alt");
+      currentLink.href = thumb.getAttribute("data-slide-large");
+      caption.textContent = thumb.getAttribute("data-slide-caption");
+      number.textContent = activeSlide + 1;
+      thumbs.forEach(function (button, i) {
+        var selected = i === activeSlide;
+        button.classList.toggle("is-active", selected);
+        if (selected) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+      });
+      thumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+    }
+
+    thumbs.forEach(function (thumb, index) {
+      thumb.addEventListener("click", function () { showSlide(index); });
+    });
+    slideshow.querySelector(".slideshow-prev").addEventListener("click", function () { showSlide(activeSlide - 1); });
+    slideshow.querySelector(".slideshow-next").addEventListener("click", function () { showSlide(activeSlide + 1); });
+  });
+
+  /* ---------- Compact photo carousels ---------- */
+  document.querySelectorAll("[data-photo-carousel]").forEach(function (carousel) {
+    var controls = carousel.previousElementSibling;
+    if (!controls) return;
+    var previous = controls.querySelector("[data-carousel-prev]");
+    var next = controls.querySelector("[data-carousel-next]");
+
+    function move(direction) {
+      var photo = carousel.querySelector("a");
+      var distance = photo ? photo.getBoundingClientRect().width + 12 : carousel.clientWidth * 0.75;
+      carousel.scrollTo({ left: carousel.scrollLeft + direction * distance, behavior: "smooth" });
+    }
+
+    previous.addEventListener("click", function () { move(-1); });
+    next.addEventListener("click", function () { move(1); });
+  });
+
   /* ---------- UTM capture (Meta ads tracking) ---------- */
   var params = new URLSearchParams(window.location.search);
   ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (key) {
@@ -294,39 +339,10 @@
         else { throw new Error("Bad response"); }
       }).catch(function () {
         submitBtn.disabled = false;
-        status.textContent = "Something went wrong — please email us directly at " + OWNER_EMAIL + ".";
+        status.textContent = "Something went wrong — please try again shortly.";
       });
-    } else {
-      // No endpoint wired up yet. Rather than pretend the enquiry was sent,
-      // hand it to the visitor's email client with everything filled in.
-      sendByEmail(data);
     }
   });
-
-  function sendByEmail(data) {
-    var labels = {
-      name: "Name", email: "Email", country_code: "Country code", phone: "Phone",
-      contact_time: "Best time to call", timescale: "Timescale", mortgage: "Financing",
-      message: "Message", utm_source: "Source", utm_medium: "Medium",
-      utm_campaign: "Campaign", utm_content: "Content", utm_term: "Term"
-    };
-    var lines = [];
-    Object.keys(labels).forEach(function (key) {
-      var value = (data.get(key) || "").toString().trim();
-      if (value) lines.push(labels[key] + ": " + value);
-    });
-    lines.push("", "Sent from " + window.location.href);
-
-    var href = "mailto:" + OWNER_EMAIL +
-      "?subject=" + encodeURIComponent("Enquiry — La Cour des Lavandes") +
-      "&body=" + encodeURIComponent(lines.join("\n"));
-
-    if (window.fbq) window.fbq("track", "Lead", { content_name: "Property enquiry" });
-    window.location.href = href;
-
-    form.querySelector(".btn-submit").disabled = false;
-    status.textContent = "Opening your email app with the details filled in — press send and it comes straight to us.";
-  }
 
   /* ---------- Social share ---------- */
   document.querySelectorAll("[data-share]").forEach(function (el) {
@@ -343,4 +359,26 @@
       if (target) window.open(target, "_blank", "noopener");
     });
   });
+})();
+
+/* TEMP: font trial switcher — remove alongside the .font-trial markup/CSS */
+(function () {
+  var trial = document.getElementById("fontTrial");
+  if (!trial) return;
+  var KEY = "lcdl_font";
+  function apply(name) {
+    if (name) document.body.setAttribute("data-font", name);
+    else document.body.removeAttribute("data-font");
+    trial.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-font") === name);
+    });
+  }
+  trial.querySelectorAll("button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var name = b.getAttribute("data-font");
+      localStorage.setItem(KEY, name);
+      apply(name);
+    });
+  });
+  apply(localStorage.getItem(KEY) || "");
 })();

@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   // Set LEAD_FROM to a sender on YOUR verified Resend domain (not the fleet one).
   const from = process.env.LEAD_FROM || "La Cour des Lavandes <onboarding@resend.dev>";
 
-  const fields = ["name", "email", "country_code", "phone", "contact_time",
+  const fields = ["name", "email", "country_code", "phone", "whatsapp_country_code", "whatsapp", "contact_time",
     "timescale", "mortgage", "message", "utm_source", "utm_medium",
     "utm_campaign", "utm_content", "utm_term"];
   const lines = fields.filter((k) => d[k]).map((k) => `${k}: ${d[k]}`).join("\n");

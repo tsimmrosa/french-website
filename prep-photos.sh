@@ -60,6 +60,13 @@ garden-path|800 1600|Path through the planting to the pool
 sunflower-field|800 1600|Sunflowers in the fields around the village
 courtyard|800 1600|Courtyard, outbuildings and parking
 outbuilding-exterior|800 1600|The outbuilding range
+outbuilding-main-room|800 1600|The large open main room inside the outbuilding
+outbuilding-main-room-2|800 1600|A second view across the outbuilding main room
+outbuilding-loft|800 1600|The lofted storage area inside the outbuilding
+outbuilding-car-port|800 1600|The covered parking area inside the outbuilding
+outbuilding-entryway|800 1600|The entry into the outbuilding main room
+outbuilding-hallway|800 1600|The hallway and rooms inside the outbuilding
+outbuilding-bedroom|800 1600|One of the rooms inside the outbuilding
 area-village-square|800 1600|The square at Couture-d'\''Argenson
 area-sunflowers|800 1600|Sunflowers at sunset
 area-la-rochelle|800 1600|La Rochelle harbour
