@@ -10,6 +10,7 @@
      ============================================================ */
   var META_PIXEL_ID = "";            // e.g. "1234567890123456"
   var FORM_ENDPOINT = "/api/lead";   // Vercel serverless handler → Resend (key stays server-side)
+  var isFrench = document.documentElement.lang === "fr";
 
   /* ---------- Sticky nav + mini price bar ---------- */
   var nav = document.querySelector(".nav");
@@ -58,7 +59,7 @@
             var tick = function (t) {
               if (!start) start = t;
               var p = Math.min((t - start) / dur, 1);
-              totalEl.textContent = "€" + Math.floor(p * target).toLocaleString("en-GB");
+              totalEl.textContent = "€" + Math.floor(p * target).toLocaleString(isFrench ? "fr-FR" : "en-GB");
               if (p < 1) requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
@@ -130,9 +131,9 @@
     if (slides.length < 2) { container.classList.add("single"); return; } // one photo — full width, no controls
 
     var prev = document.createElement("button");
-    prev.className = "ss-btn ss-prev"; prev.setAttribute("aria-label", "Previous photos"); prev.innerHTML = "‹";
+    prev.className = "ss-btn ss-prev"; prev.setAttribute("aria-label", isFrench ? "Photos précédentes" : "Previous photos"); prev.innerHTML = "‹";
     var next = document.createElement("button");
-    next.className = "ss-btn ss-next"; next.setAttribute("aria-label", "Next photos"); next.innerHTML = "›";
+    next.className = "ss-btn ss-next"; next.setAttribute("aria-label", isFrench ? "Photos suivantes" : "Next photos"); next.innerHTML = "›";
     container.appendChild(prev); container.appendChild(next);
 
     function stepSize() {
@@ -311,13 +312,13 @@
     e.preventDefault();
 
     if (!form.name.value.trim() || !form.email.value.trim()) {
-      status.textContent = "Please add your name and email so we can reply.";
+      status.textContent = isFrench ? "Merci d’indiquer votre nom et votre adresse e-mail afin que nous puissions vous répondre." : "Please add your name and email so we can reply.";
       return;
     }
 
     var submitBtn = form.querySelector(".btn-submit");
     submitBtn.disabled = true;
-    status.textContent = "Sending…";
+    status.textContent = isFrench ? "Envoi en cours…" : "Sending…";
 
     var data = new FormData(form);
 
@@ -326,7 +327,7 @@
       if (window.fbq) window.fbq("track", "Lead", { content_name: "Property enquiry" });
       form.reset();
       submitBtn.disabled = false;
-      status.textContent = "Thank you — we've received your enquiry and will reply personally, usually within a day.";
+      status.textContent = isFrench ? "Merci — nous avons bien reçu votre demande et vous répondrons personnellement, généralement sous 24 heures." : "Thank you — we've received your enquiry and will reply personally, usually within a day.";
     };
 
     if (FORM_ENDPOINT) {
@@ -339,7 +340,7 @@
         else { throw new Error("Bad response"); }
       }).catch(function () {
         submitBtn.disabled = false;
-        status.textContent = "Something went wrong — please try again shortly.";
+        status.textContent = isFrench ? "Une erreur s’est produite — veuillez réessayer dans quelques instants." : "Something went wrong — please try again shortly.";
       });
     }
   });
@@ -349,11 +350,11 @@
     el.addEventListener("click", function (e) {
       e.preventDefault();
       var url = encodeURIComponent(window.location.href.split("?")[0]);
-      var text = encodeURIComponent("A French village property of four buildings with two income-producing gîtes, gardens and a pool — €490,000, private sale.");
+      var text = encodeURIComponent(isFrench ? "Une propriété de village composée de quatre bâtiments, avec deux gîtes, un beau jardin et une piscine — 490 000 €, vente entre particuliers." : "A French village property of four buildings with two income-producing gîtes, gardens and a pool — €490,000, private sale.");
       var map = {
         facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
         x: "https://twitter.com/intent/tweet?url=" + url + "&text=" + text,
-        email: "mailto:?subject=" + encodeURIComponent("A French property worth a look") + "&body=" + text + "%0A%0A" + url
+        email: "mailto:?subject=" + encodeURIComponent(isFrench ? "Une propriété française à découvrir" : "A French property worth a look") + "&body=" + text + "%0A%0A" + url
       };
       var target = map[el.getAttribute("data-share")];
       if (target) window.open(target, "_blank", "noopener");
